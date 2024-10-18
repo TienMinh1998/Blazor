@@ -1,0 +1,20 @@
+﻿@using THFontEnd.Models
+
+@switch (MyProperty)
+{
+    case LifeCircleType.LEVEL1:
+        <span class="badge bg-secondary opacity-75">Low</span>
+        break;
+    case LifeCircleType.LEVEL2:
+        <span class="badge bg-warning opacity-75">Medium</span>
+        break;
+    case LifeCircleType.LEVEL3:
+        <span class="badge bg-danger opacity-75">high</span>
+        break;
+}
+
+
+@code {
+    [Parameter]
+    public LifeCircleType MyProperty { get; set; }
+}

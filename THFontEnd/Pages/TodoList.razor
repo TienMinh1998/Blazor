@@ -1,0 +1,55 @@
+﻿@page "/list"
+@inject IJSRuntime JS
+
+@if (list == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mã trạng thái</th>
+                    <th>Người yêu cầu</th>
+                    <th>Mức độ ưu tiên</th>
+                    <th>Trạng Thái</th>
+                    <th>Số tiền</th>
+                    <th>Nội Dung Chi</th>
+                    <th>Ngày Tạo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in list)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.PaymentRequestCode</td>
+                        <td>@item.RequesterName</td>
+                        <th><THFontEnd.Components.PriorityLabel MyProperty="@item.LifeCircleType"></THFontEnd.Components.PriorityLabel></th>
+                        <td><THFontEnd.Components.StatusLabel Status="@item.Status"></THFontEnd.Components.StatusLabel></td>
+                        <td>@item.Amount.ToString("N0") VND</td>
+                        <td>@item.Description</td>
+                        <td>@item.CreatedUtcDate</td>
+                        <td>
+                            <a href="/paymentDetail/@item.Id">Detail</a>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+}
+
+
+
+
+@code {
+    string name = "TestName";
+}

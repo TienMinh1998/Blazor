@@ -1,0 +1,27 @@
+﻿
+@switch (Status)
+{
+    case "NEW":
+        <span class="badge bg-primary bg-opacity-75">Đơn mới</span>
+        break;
+    case "PENDING":
+        <span class="badge bg-warning text-dark bg-opacity-80">Đang duyệt đơn</span>
+        break;
+    case "APPROVED":
+        <span class="badge bg-warning text-dark opacity-80">Đang đợi định khoản</span>
+        break;
+    case "REJECT":
+        <span class="badge bg-danger opacity-90">Bị từ chối</span>
+        break;
+    case "ASSMT_OK":
+        <span class="badge bg-success opacity-90">Đợi thanh toán</span>
+        break;
+    case "CANCLE":
+        <span class="badge bg-secondary opacity-80">Đã được xử lý</span>
+        break;
+}
+
+@code {
+    [Parameter]
+    public string Status { get; set; } = "";
+}

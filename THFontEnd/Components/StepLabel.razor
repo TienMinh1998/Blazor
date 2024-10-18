@@ -1,0 +1,83 @@
+﻿@using THFontEnd.Models
+
+<style>
+    .step {
+        position: relative;
+        text-align: center;
+    }
+
+        .step .circle {
+            width: 50px;
+            height: 50px;
+            background-color: dimgrey;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .circle2 {
+            width: 50px;
+            height: 50px;
+            background-color: #448fce;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+
+
+
+    .step-title {
+        font-weight: bold;
+    }
+
+    .step-description {
+        color: #777;
+    }
+
+
+    /* Mũi tên dọc */
+    .step::after {
+        content: '';
+        position: absolute;
+        width: 2px; /* Độ dày của đường */
+        height: 30px; /* Chiều dài của mũi tên nối */
+        background-color: gray;
+        top: 50px; /* Điều chỉnh khoảng cách từ đỉnh của vòng tròn */
+        left: 50%; /* Căn giữa đường nối với vòng tròn */
+        transform: translateX(-50%);
+    }
+
+</style>
+    
+    <div class="container">
+
+    @foreach (var item in PaymentRequestSteps)
+    {
+        
+        <div class="step">
+            <div class="@((item.Status == "SUCCESS") ? "circle2" : "circle")">@item.StepOrder</div>
+            <div class="step-content">
+                <div class="step-title">@item.StepName</div>
+                <div class="step-description">@item.StepAction</div>
+            </div>
+        </div>
+    }
+       
+    </div>
+
+    
+@code {
+    [Parameter]
+    public ICollection<PaymentRequestStep> PaymentRequestSteps { get; set; }
+}

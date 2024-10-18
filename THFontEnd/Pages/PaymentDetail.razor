@@ -1,0 +1,192 @@
+﻿@page "/paymentDetail/{id}"
+@using THFontEnd.Services;
+@using THFontEnd.Models;
+@inject IToastService toastService;
+@inject NavigationManager Navigation
+@inject ITaskApiClient apiService;
+@inject IJSRuntime JS;
+
+@if (PaymentModel == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <div class="container mt-4">
+
+        <div class="row">
+            <div class="col-10">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <span>
+                      Mã đơn:
+                        <span class="th_button"> @PaymentModel.PaymentRequestCode</span>
+                  </span>
+                </div>
+
+                <!-- Card for Payment Request Details -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+
+                                <tr>
+                                    <th scope="row" class="w-25 text-muted">Người yêu cầu</th>
+                                    <td>Nguyễn Viết Minh Tiến</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="w-25 text-muted">Chức vụ</th>
+                                    <td><span>Nhân viên kinh doanh</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="w-25 text-muted">Ngày yêu cầu</th>
+                                    <td>@PaymentModel.CreatedUtcDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <th scope="row" class="w-25 text-muted">Mô tả</th>
+                                    <td>@PaymentModel.Description</td>
+
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="w-25 text-muted">Số tiền</th>
+                                    <td> @PaymentModel.Amount <span class="sotien">VNĐ</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="w-25 text-muted">Trạng thái xử lý</th>
+                                    <td><THFontEnd.Components.StatusLabel Status="@PaymentModel.Status"></THFontEnd.Components.StatusLabel></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="w-25 text-muted">Quy trình thanh toán</th>
+                                    <td><THFontEnd.Components.LabelPaymentCircle LifeCircleType="@PaymentModel.LifeCircleType"></THFontEnd.Components.LabelPaymentCircle></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Approval Button Section -->
+                @if (RoleId == 3)
+                {
+                      <div class="mt-3 text-lg-start">
+                        <button type="button" class="th_button" @onclick="DuyetChi"><i class="text-dark fa-solid fa-person-circle-check"></i> Duyệt Chi</button>
+                        <button type="button" class="th_button" @onclick="Reject"><i class="text-danger fa-solid fa-ban"></i> Từ chối yêu cầu</button>
+                        <button type="button" class="th_button" @onclick="SetAccountAssignment">Định khoản</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="mt-3 text-lg-start">
+                        <button type="button" class="th_button" @onclick="EditDetail"><i class="text-warning fa-solid fa-pen-to-square"></i> Sửa yêu cầu</button>
+
+                    </div>
+                }
+
+
+            </div>
+            <!--step css-->
+            <div class="col-2">
+                <THFontEnd.Components.StepLabel PaymentRequestSteps="PaymentModel.PaymentRequestSteps"></THFontEnd.Components.StepLabel>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private int RoleId;
+    private PaymentRequestModel PaymentModel { get; set; }
+
+    private List<StepItem> listStep { get; set; } = new List<StepItem>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var str_roleId = await JS.InvokeAsync<string>("sessionStorage.getItem", "role");
+        int roleID = int.Parse(str_roleId);
+        this.RoleId = roleID;
+        PaymentModel = await apiService.GetRequestById(int.Parse(id));
+    }
+
+    public async void DuyetChi()
+    {
+        // duyệt tại đây
+        var requestModel = new ApproveRequestModel
+            {
+                UserId = 3,
+                NoteForApproved = "note",
+                RequestId = int.Parse(id)
+            };
+        var result = await apiService.Approved(requestModel);
+
+        if (result == true)
+        {
+            // reload API
+            PaymentModel = await apiService.GetRequestById(int.Parse(id));
+            toastService.ShowSuccess("Duyệt đơn thành công!");
+
+            StateHasChanged(); // Thông báo cho Blazor cập nhật lại giao diện
+        }
+        else
+        {
+            // Xử lý khi duyệt đơn thất bại
+        }
+
+
+    }
+
+    public async void Reject()
+    {
+        // duyệt tại đây
+        var requestModel = new RejectRequest
+            {
+                RequestId = int.Parse(id)
+            };
+        var result = await apiService.RejectRequest(requestModel);
+
+        if (result == true)
+        {
+            Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+            toastService.ShowSuccess("Từ chối đơn thành công!");
+
+        }
+        else
+        {
+            toastService.ShowError("Duyệt đơn thất bại");
+        }
+
+    }
+
+    public async void SetAccountAssignment()
+    {
+
+        var result = await apiService.AccountAsignment(int.Parse(id));
+        if (result == true)
+        {
+            await ReloadData();
+            toastService.ShowSuccess("Định khoản thành công!");
+
+        }
+        else
+        {
+            toastService.ShowError("Duyệt đơn thất bại");
+        }
+
+    }
+
+    private async Task ReloadData()
+    {
+        PaymentModel = await apiService.GetRequestById(int.Parse(id));
+    }
+
+    public async void EditDetail()
+    {
+        // duyệt tại đây
+        toastService.ShowInfo("Chức năng đang phát triền");
+    }
+}

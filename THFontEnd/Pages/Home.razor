@@ -1,0 +1,38 @@
+﻿@page "/home"
+@using THFontEnd.Services
+
+@implements IDisposable
+@inject StateContainer StateContainer
+@inject LoginState _loginState;
+@inject IJSRuntime JS
+
+
+<h2>Nested component</h2>
+
+<p>Nested component Property: <b>@UserName</b></p>
+
+<p>
+    <button @onclick="ChangePropertyValue">
+        Change the Property from the Nested component
+    </button>
+</p>
+
+@code {
+    public string UserName;
+
+    protected async override Task OnInitializedAsync()
+    {
+        UserName =await JS.InvokeAsync<string>("sessionStorage.getItem", "user");
+    }
+
+    private void ChangePropertyValue()
+    {
+        var currentState = _loginState.GetSate();
+        _loginState.SetState(!currentState);
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}

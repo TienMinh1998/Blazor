@@ -1,0 +1,61 @@
+﻿
+
+<div class="top-row ps-3 navbar navbar-dark">
+   
+    @inject LoginState _loginState
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Trần Hoàng Company</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink  class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> @(_loginState.GetSate()?"Đăng nhập":"Đăng xuất")
+               
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="paymentCreate">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Tạo đơn yêu cầu chi
+            </NavLink>
+        </div>
+
+        <!--Danh sách đơn yêu cầu-->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="list">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Danh sách đơn yêu cầu
+            </NavLink>
+        </div>
+
+        <!--Thông tin người dùng-->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="userprofile">
+                <i class="bi bi-plus-square-fill-nav-menu"></i> Thông tin người dùng.
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    protected override void OnInitialized()
+    {
+        _loginState.OnChange += StateHasChanged; // Listen event from loginState; 
+
+    }
+
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

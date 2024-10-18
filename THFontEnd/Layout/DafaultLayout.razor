@@ -1,0 +1,18 @@
+﻿@inherits LayoutComponentBase
+@using Blazored.Toast.Configuration
+<BlazoredToasts Position="ToastPosition.TopRight"
+                Timeout="3"
+                IconType="IconType.FontAwesome"
+                SuccessClass="success-toast-override"
+                SuccessIcon="fa fa-thumbs-up"
+                ErrorIcon="fa fa-bug" />
+
+<link rel="stylesheet" href="logincss/style.css" />
+
+<body style="background-image: url('images/bg.jpg');  height: 100vh; background-size:cover; 
+ background-position: center;
+  background-repeat: no-repeat;
+">
+@Body
+</body>
+

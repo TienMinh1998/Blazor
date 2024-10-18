@@ -1,0 +1,188 @@
+﻿@page "/paymentCreate"
+@using System.ComponentModel.DataAnnotations
+@using THFontEnd.Models
+@using THFontEnd.Services
+
+@inject ITaskApiClient _apiService;
+@inject NavigationManager nav;
+@inject IToastService toastService;
+@inject IJSRuntime JS
+
+<!--Bootrap-->
+<section class="vh-100" style="background-color: #eee;">
+    <div class="container h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-12 col-xl-11">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="card-body p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                                <div>
+                                    <p class="text-dark h2 fw-bold">Yêu cầu chi tiền</p>
+
+                                    <p class="text-secondary opacity-75">
+                                        <span class="text-dark fw-bold">Hi!</span>
+                                        <span class="fw-bold text-primary">@UserName</span>
+                                        <span>Bạn có thể tạo yêu cầu chi tiền loại 1</span>
+                                    </p>
+                                </div>
+
+
+                                <!--FORM-->
+
+                                <EditForm Model="MyModel" OnValidSubmit="CreateNewYC">
+                                    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div style="padding:10px; margin-top:5px">
+                                            <i class="fas fa-lg fa-solid fa-closed-captioning"></i>
+                                        </div>
+
+
+                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                            <label class="form-label" for="form3Example3c">Loại thanh toán  <span class="required">*</span></label>
+                                            <InputSelect class="form-control" @bind-Value="MyModel.paymentTypeId" @onchange="ChosesPaymentType">
+                                                @foreach (var item in paymentTypeList.Cast<PaymentType>())
+                                                {
+                                                    <option value="@item">@GetDisplayName((PaymentType)item)</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="()=>MyModel.paymentTypeId"></ValidationMessage>
+
+                                        </div>
+                                    </div>
+
+                                    <!--Số tiền cần thanh toán-->
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div style="padding:10px; margin-top:5px">
+                                            <i class="fa-lg fa-solid fa-sack-dollar"></i>
+                                        </div>
+                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                            <label class="form-label" for="form3Example3c">Số tiền yêu cầu thanh toán  <span class="required">*</span></label>
+                                            <InputNumber class="form-control" @bind-Value="MyModel.Amount" @oninput="FormatCurrency"></InputNumber>
+                                            <ValidationMessage For="()=>MyModel.Amount"></ValidationMessage>
+                                            <div class="mt-1"></div>
+                                            <button @onclick="getMoney" type="button" class="th_button"> <i class="text-danger fa-solid fa-dollar-sign"></i> 100 triệu</button>
+                                            <button type="button" class="th_button"> <i class="text-danger fa-solid fa-dollar-sign"></i> 200 triệu</button>
+                                            <button type="button" class="th_button"> <i class="text-danger fa-solid fa-dollar-sign"></i> 500 triệu</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div style="padding:10px; margin-top:5px" class="text-dark">
+                                            <i class="fa-lg fa-regular fa-note-sticky"></i>
+                                        </div>
+                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                            <label class="form-label" for="form3Example3c">Ghi chú về yêu cầu  <span class="required">*</span></label>
+                                            <InputTextArea class="form-control" @bind-Value="MyModel.Description" rows="3"></InputTextArea>
+                                            <ValidationMessage For="()=>MyModel.Description"></ValidationMessage>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-check d-flex justify-content-center mb-5">
+                                        <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
+                                        <label class="form-check-label" for="form2Example3">
+                                            Thông báo người duyệt<a href="#!"> (Hướng dẫn)</a>
+                                        </label>
+                                    </div>
+
+
+                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                        <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary">Gửi yêu cầu</button>
+                                    </div>
+                                </EditForm>
+                                <!--END FORM-->
+                            </div>
+                            <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
+                                     class="img-fluid" alt="Sample image">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private PaymentRequest MyModel = new PaymentRequest();
+    private List<int> paymentTypeList = new List<int>();
+    private string UserName = "";
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInfomation();
+    }
+
+    private async Task CreateNewYC(EditContext context)
+    {
+
+        var userId = await JS.InvokeAsync<string>("localStorageHelper.getUserId");
+        MyModel.RequesterId = int.Parse(userId);
+        var result = await _apiService.CreateNewPaymentRequest(MyModel);
+        if (result == true)
+        {
+            toastService.ShowSuccess("Tạo thành công yêu cầu chi tiền");
+            nav.NavigateTo("/list");
+        }
+        else
+        {
+
+        }
+    }
+
+    private string GetDisplayName(PaymentType paymentType)
+    {
+        var displayAttribute = paymentType.GetType()
+            .GetField(paymentType.ToString())
+            ?.GetCustomAttributes(false)
+            .OfType<DisplayAttribute>()
+            .FirstOrDefault();
+
+        return displayAttribute?.Name ?? paymentType.ToString();
+    }
+
+    private string GetDisplayName(LifeCircleType paymentType)
+    {
+        var displayAttribute = paymentType.GetType()
+            .GetField(paymentType.ToString())
+            ?.GetCustomAttributes(false)
+            .OfType<DisplayAttribute>()
+            .FirstOrDefault();
+
+        return displayAttribute?.Name ?? paymentType.ToString();
+    }
+
+    private void FormatCurrency(ChangeEventArgs e)
+    {
+        if (decimal.TryParse(e.Value?.ToString(), out var amount))
+        {
+            // Định dạng số tiền với dấu ngăn cách hàng nghìn
+            MyModel.Amount = amount;
+            // Cập nhật hiển thị số tiền với định dạng ngăn cách
+            var formattedAmount = string.Format("{0:N0}", MyModel.Amount);
+            // Đây là ví dụ đơn giản, có thể hiển thị giá trị formattedAmount ra ngoài giao diện nếu cần
+            Console.WriteLine(formattedAmount); // Hoặc bạn có thể sử dụng phương thức cập nhật UI
+        }
+    }
+
+    private void ChosesPaymentType(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value;
+        // Logic của bạn khi chọn kiểu chi
+    }
+
+    public void getMoney()
+    {
+        this.MyModel.Amount = 100000000;
+    }
+
+    public async Task LoadInfomation()
+    {
+        var userId = await JS.InvokeAsync<string>("localStorageHelper.getUserId");
+        paymentTypeList = await _apiService.GetPaymentTypesByUserId(int.Parse(userId));
+    }
+}

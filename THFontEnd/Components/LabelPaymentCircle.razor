@@ -1,0 +1,19 @@
+﻿@using THFontEnd.Models
+@switch (LifeCircleType)
+{
+    case LifeCircleType.LEVEL1:
+        <span class="badge bg-light text-dark bg-opacity-75">QUY TRÌNH LOẠI 1</span>
+        break;
+    case LifeCircleType.LEVEL2:
+        <span class="badge bg-warning text-dark bg-opacity-80">QUY TRÌNH LOẠI 2</span>
+        break;
+    case LifeCircleType.LEVEL3:
+        <span class="badge bg-success opacity-80">QUY TRÌNH LOẠI 3 (lấy tiền nhanh)</span>
+        break;
+}
+
+@code {
+    [Parameter]
+    public LifeCircleType LifeCircleType { get; set; } = LifeCircleType.LEVEL1;
+
+}

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "THFontEnd", "THFontEnd\THFontEnd.csproj", "{D4D2D41C-6CE0-45F9-83E4-9DB83A0A7942}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D4D2D41C-6CE0-45F9-83E4-9DB83A0A7942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D2D41C-6CE0-45F9-83E4-9DB83A0A7942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D2D41C-6CE0-45F9-83E4-9DB83A0A7942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D2D41C-6CE0-45F9-83E4-9DB83A0A7942}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3D1C094-29F5-487F-B81B-8FA1D65013C3}
+	EndGlobalSection
+EndGlobal
