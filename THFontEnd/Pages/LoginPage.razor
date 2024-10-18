@@ -72,7 +72,7 @@
 							<input type="text" class="form-control" @bind-value="loginModel.UserName" placeholder="Username" required>
 						</div>
 						<div class="form-group">
-							<InputText id="password-field" type="password" @bind-value="loginModel.Passwork" class="form-control" placeholder="Password" required></InputText>
+							<input id="password-field" type="password" @bind-value="loginModel.Passwork" class="form-control" placeholder="Password" required></input>
 							<ValidationMessage For="()=>loginModel.Passwork"></ValidationMessage>
 							<span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
 						</div>
