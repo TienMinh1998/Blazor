@@ -1,5 +1,6 @@
 ﻿
 @page "/"
+@using THFontEnd.Models
 @using THFontEnd.Services
 
 @layout THFontEnd.Layout.DafaultLayout
@@ -11,20 +12,19 @@
 
 
 @code {
-    private string username;
-    private string password;
-    private bool showError;
+	private bool showError;
+	public void Login()
+	{
 
-    public void Login()
-    {
+	}
 
-    }
+	private LoginModelRequest loginModel = new LoginModelRequest();
 
     private async Task HandleLogin()
     {
         try
         {
-            var result = await _apiService.Login(username, password);
+            var result = await _apiService.Login(loginModel.UserName, loginModel.Passwork);
             // save userID to localStorate
             await JS.InvokeVoidAsync("localStorageHelper.setUserId", result.UserId);
             await JS.InvokeVoidAsync("sessionStorage.setItem", "user", result.FullName);
@@ -59,23 +59,23 @@
 	<div class="container">
 		<div class="row justify-content-center">
 			<div class="col-md-6 text-center mb-5">
-				<h2 class="heading-section">Login #10</h2>
+				<h2 class="heading-section">Đăng nhập hệ thống quản lý (登录系统)</h2>
 			</div>
 		</div>
 		<div class="row justify-content-center">
 			<div class="col-md-6 col-lg-4">
 				<div class="login-wrap p-0">
-					<h3 class="mb-4 text-center">Have an account?</h3>
-					<form action="#" class="signin-form">
+					<h3 class="mb-4 text-center">Chưa có tài khoản liên hệ admin (还没有帐号，请联系管理员)</h3>
+					<EditForm class="signin-form" Model="loginModel" OnSubmit="HandleLogin">
 						<div class="form-group">
-							<input type="text" class="form-control" placeholder="Username" required>
+							<input type="text" class="form-control" @bind-value="loginModel.UserName" placeholder="Username" required>
 						</div>
 						<div class="form-group">
-							<input id="password-field" type="password" class="form-control" placeholder="Password" required>
+							<input id="password-field" type="password" @bind-value="loginModel.Passwork" class="form-control" placeholder="Password" required>
 							<span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
 						</div>
 						<div class="form-group">
-							<button type="submit" class="form-control btn btn-primary submit px-3">Sign In</button>
+							<button type="submit" class="form-control btn btn-primary submit px-3">Sign In (登录)</button>
 						</div>
 						<div class="form-group d-md-flex">
 							<div class="w-50">
@@ -89,7 +89,7 @@
 								<a href="#" style="color: #fff">Forgot Password</a>
 							</div>
 						</div>
-					</form>
+					</EditForm>
 					<p class="w-100 text-center">&mdash; Or Sign In With &mdash;</p>
 					<div class="social d-flex text-center">
 						<a href="#" class="px-2 py-2 mr-md-1 rounded"><span class="ion-logo-facebook mr-2"></span> Facebook</a>
